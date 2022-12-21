@@ -21,18 +21,20 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
 
     //global variables
     boolean isValid = false;
-    int productID;
+    // int productID;
+    String productID;
+    String productName;
 
     public static void main(String[] args) {
 
         //instance of this class
         runAESystem runSystem = new runAESystem();
-        runSystem.selectTask();
+        runSystem.selectTask(); // method that will start the system
         
     }
 
     @Override
-    public void selectTask() {
+    public void selectTask() { //method that handles the selection choice
 
         System.out.println();
 
@@ -51,34 +53,34 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
         System.out.println("\t\t\t\t\t\t\t\t             > View Product Expiry Only[4]\n\n");
 	
         System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
-        String selectionChoice = sc.next();
+        String selectionChoice = sc.nextLine(); //handles the storage for the admin choice
 
-        if(selectionChoice.equals("1")) { //conditional statement for the users choice
+        if(selectionChoice.equals("1")) { //conditional statement for the admin choice
 
             isValid = true;
-            addItems();
+            addItems(); //add items function
 
         }else if(selectionChoice.equals("2")) { 
 
             isValid = true;
-            editQnt();
+            editQnt(); //edit products quantity with this function
             
 
         }else if(selectionChoice.equals("3")) { 
 
             isValid = true;
-            viewOverAllItems();
+            viewOverAllItems(); //view the table with this function
 
         }else if(selectionChoice.equals("4")) { 
 
             isValid = true;
-            viewItemsExpiry();
+            viewItemsExpiry(); //function for viewing items expiry
             
         }else { 
 
             isValid = false;
             System.out.println();
-            System.out.println("\t\t\t\t\t\t\t\t          AEerror305: INVALID INPUT, TRY AGAIN!\n");
+            System.out.println("\t\t\t\t\t\t\t\t          AEerror305: INVALID INPUT, TRY AGAIN!\n"); //for validation purposes
 
         }
 
@@ -86,11 +88,11 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
     }
 
     @Override
-    public void addItems() {
+    public void addItems() { //adding items function
 
         System.out.println();
                 System.out.println("=====================================================================================================================================================================================\n");
-        System.out.println("\t\t\t\t\t\t\t\t                  == ADD PRODUCTS ==\n");
+        System.out.println("\t\t\t\t\t\t\t\t                  == ADD PRODUCTS ==");
 
         try {
 
@@ -98,30 +100,39 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
             aeDataBase.getConnection(); //establishing a connection to our data base
             
             productsInv = new productsInv(); //instance of the class of the class that is being encapsulated.
+
         
         do{ //loop for user validation if the user inputs invalid data.
             try {
+                
+                System.out.println("\t\t\t\t\t\t\t\t\t            PRODUCT INFO: \n");
+                System.out.println("\t\t\t\t\t\t\t\t      Enter Product Category (Ex. Frozen, Canned, etc)");
+                System.out.print("\t\t\t\t\t\t\t\t      > ");
+                String productCategory = sc.nextLine().toUpperCase();
 
-                System.out.println("PRODUCT INFO: \n");
-                System.out.println("Enter Product Name (Ex. Tender Juicy Hotdog) ");
-                System.out.print("> ");
-                String productName = sc.next().toUpperCase();
+                productsInv.setProductCategory(productCategory);
 
                 System.out.println();
 
+                System.out.println("\t\t\t\t\t\t\t\t      Enter Product Name (Ex. Tender Juicy Hotdog)");
+                System.out.print("\t\t\t\t\t\t\t\t      > ");
+                productName = sc.nextLine().toUpperCase();
+
                 productsInv.setProductName(productName); //calling setter method to set product name
 
-                System.out.println("Enter Product Quantity (Ex. 20): ");
-                System.out.print("> ");
-                int productQnt = sc.nextInt();
+                System.out.println();
+                    
+                System.out.println("\t\t\t\t\t\t\t\t      Enter Product Quantity (Ex. 20)");
+                System.out.print("\t\t\t\t\t\t\t\t      > ");
+                String productQnt = sc.nextLine();
 
                 productsInv.setProductQuantity(productQnt); //calling setter method to set product quantity
 
                 System.out.println();
 
-                System.out.println("Enter Product Expiration Date in this format (YYYY-MM-DD)");
-                System.out.print("> ");
-                String productExp = sc.next();
+                System.out.println("\t\t\t\t\t\t\t\t      Enter Product Expiration Date in this format (YYYY-MM-DD)");
+                System.out.print("\t\t\t\t\t\t\t\t      > ");
+                String productExp = sc.nextLine();
 
                 java.sql.Date prodExp = java.sql.Date.valueOf(productExp); //converting the string value into a util.Date
 
@@ -129,33 +140,23 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
 
                 System.out.println();
 
-                System.out.println("Enter Product Category (Ex. Frozen, Canned, Hygiene, Drink)");
-                System.out.print("> ");
-                String productCategory = sc.next().toUpperCase();
-
-                productsInv.setProductCategory(productCategory);
-
-                System.out.println();
-
                 long millis = System.currentTimeMillis(); //getting the time and storing it into a long variable
                 java.sql.Date dateAdded = new java.sql.Date(millis); //using java.sql.date we can get the date today, this will serve as the date where a product has been inserted.
 
                 productsInv.setDateAdded(dateAdded); //calling the setter method to set the date added.
-        
-                aeDataBase = new config();
-                conn = aeDataBase.getConnection();
-        
-                long days = compareDates(productsInv.getDateAdded(), productsInv.getProductExpirationDate()) + 1;
-        
+            
+                long days = compareDates(productsInv.getDateAdded(), productsInv.getProductExpirationDate()) + 1; //method for getting the days by comparing the two dates
+            
                 productsInv.setDaysLeft(days);
 
                 postMethod(); //calling the post function
-            
+
+                
             } catch (Exception e) {
                 
                 System.out.println();
                 isValid = false;
-                System.out.println("AEerror305: INVALID INPUT, TRY AGAIN!\n");
+                System.out.println("AEerror305: INVALID INPUT, TRY AGAIN!\n"); //validation purposes
             }
 
         }while(isValid == false);
@@ -167,10 +168,10 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
     }
 
     @Override
-    public void editQnt() {
+    public void editQnt() { //function for editing quantity
 
         aeDataBase = new config();
-        conn = aeDataBase.getConnection();
+        conn = aeDataBase.getConnection(); //getting the connection from the data base
 
         try {
             PreparedStatement selectQuery = conn.prepareStatement("SELECT * FROM products"); //selecting from the table
@@ -179,18 +180,18 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
             System.out.println();
 
             System.out.println("\t\t\t\t\t\t\t\t\t         VIEW PRODUCTS TABLE");
-            System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
-            System.out.printf("\t\t\t\t\t   %20s%15s%15s%15s%15s%15s%15s", " ID" ,"      PRODUCT NAME" , "   QUANTITY", " DATE ADDED", "EXP DATE", "CATEGORY", "DAYS LEFT");
+            System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+            System.out.printf("\t\t\t\t\t   %8s%18s%18s%18s%17s%15s%15s", " ID" ,"      PRODUCT NAME" , "   QUANTITY", " DATE ADDED", "EXP DATE", "CATEGORY", "DAYS LEFT");
             System.out.println();
-            System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
+            System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
 
 
-            while(fetchProducts.next()) { //while it has a row to be fetch
+            while(fetchProducts.next()) { //while it has a row to be fetch, display the row from the data base
 
-                System.out.printf("\t\t\t\t\t   %20s%15s%15s%17s%17s%12s%15s" ,fetchProducts.getInt("product_id") ,fetchProducts.getString("product_name"), fetchProducts.getInt("product_quantity"), fetchProducts.getDate("date_added"), fetchProducts.getString("product_exp"), fetchProducts.getString("category"), fetchProducts.getInt("days_left"));
+                System.out.printf("\t\t\t\t\t   %8s%15s%18s%21s%18s%13s%13s" ,fetchProducts.getInt("product_id") ,fetchProducts.getString("product_name"), fetchProducts.getInt("product_quantity"), fetchProducts.getDate("date_added"), fetchProducts.getString("product_exp"), fetchProducts.getString("category"), fetchProducts.getInt("days_left"));
                 System.out.println();
               
-                System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
+                System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
             }
 
         } catch (SQLException e) {
@@ -205,65 +206,78 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
 
                 System.out.println("\t\t\t\t\t\t\t\t                    EDIT QUANTITY: \n");
                 System.out.print("\t\t\t\t\t\t\t\t           Enter the ID of the product: ");
-                productID = sc.nextInt();
+                productID = sc.nextLine();
 
                 System.out.println();
-
-                PreparedStatement selectProduct = conn.prepareStatement("SELECT * FROM products WHERE product_id = '"+ productID +"' ");
+        
+                PreparedStatement selectProduct = conn.prepareStatement("SELECT * FROM products WHERE product_id = '"+ productID +"' "); //selecting from the data base where the ID is equal to the admins id input, in order to display specific ID.
                 ResultSet fetchID = selectProduct.executeQuery();
 
-                System.out.println("\t\t\t\t\t\t\t\t\t         VIEW PRODUCTS TABLE");
-                System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
-                System.out.printf("\t\t\t\t\t   %20s%15s%15s%15s%15s%15s%15s", " ID" ,"      PRODUCT NAME" , "   QUANTITY", " DATE ADDED", "EXP DATE", "CATEGORY", "DAYS LEFT");
-                System.out.println();
-                System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
+                
+                    if(fetchID.isBeforeFirst()) {
+
+                        System.out.println("\t\t\t\t\t\t\t\t\t         VIEW PRODUCTS TABLE");
+                        System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+                        System.out.printf("\t\t\t\t\t   %8s%18s%18s%18s%17s%15s%15s", " ID" ,"      PRODUCT NAME" , "   QUANTITY", " DATE ADDED", "EXP DATE", "CATEGORY", "DAYS LEFT");
+                        System.out.println();
+                        System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+            
+            
+                        while(fetchID.next()) { //while it has a row to be fetch, display the row from the data base
+            
+                            System.out.printf("\t\t\t\t\t   %8s%15s%18s%21s%18s%13s%13s" ,fetchID.getInt("product_id") ,fetchID.getString("product_name"), fetchID.getInt("product_quantity"), fetchID.getDate("date_added"), fetchID.getString("product_exp"), fetchID.getString("category"), fetchID.getInt("days_left"));
+                            System.out.println();
+                          
+                            System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+                        }
+            
+                    do{ //prompting the admin to choose between these options
+
+                        System.out.println();
+                        System.out.println("\t\t\t\t\t\t\t\t                 What do you want to do?\n");
+                        System.out.println("\t\t\t\t\t\t\t\t               > Add Quantity[1]\n");
+                        System.out.println("\t\t\t\t\t\t\t\t               > Deduct Quantity[2]\n");
+                        System.out.println("\t\t\t\t\t\t\t\t               > Exit[3]\n");
+                
+                        System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
+                        String choice = sc.nextLine();
+            
+                        if(choice.equals("1")) { 
+                
+                            isValid = true;
+                            addQuantity();
+                           
+                
+                        }else if(choice.equals("2")) { 
+                
+                            isValid = true;
+                            subtractQuantity();
+                            
+                        }else if(choice.equals("3")) {
+            
+                            isValid = true;
+                            selectTask();
+                            System.out.println();
+            
+                        }else { 
+                
+                            isValid = false;
+                            System.out.println();
+                            System.out.println("\t\t\t\t\t\t\t\t          AEerror305: INVALID INPUT, TRY AGAIN!\n");
+                
+                        }
+                
+                        }while(isValid == false);
+
+                    }else {
+
+                        isValid = false;
+                        System.out.println("\t\t\t\t\t\t\t\t        AEerror305: INVALID INPUT, NO ID FOUND!!");
+                        System.out.println();
     
 
-                while(fetchID.next()) { //while it has a row to be fetch
+                    }                
 
-                    System.out.printf("\t\t\t\t\t   %20s%15s%15s%17s%17s%12s" ,fetchID.getInt("product_id") ,fetchID.getString("product_name"), fetchID.getInt("product_quantity"), fetchID.getDate("date_added"), fetchID.getString("product_exp"), fetchID.getString("category"), fetchID.getInt("days_left"));System.out.println();
-                  
-                    System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
-                }
-
-                do{
-
-                    System.out.println();
-                    System.out.println("\t\t\t\t\t\t\t\t                 What do you want to do?\n");
-                    System.out.println("\t\t\t\t\t\t\t\t               > Add Quantity[1]\n");
-                    System.out.println("\t\t\t\t\t\t\t\t               > Deduct Quantity[2]\n");
-                    System.out.println("\t\t\t\t\t\t\t\t               > Exit[3]\n");
-            
-                    System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
-                    String choice = sc.next();
-        
-                    if(choice.equals("1")) { 
-            
-                        isValid = true;
-                        addQuantity();
-                       
-            
-                    }else if(choice.equals("2")) { 
-            
-                        isValid = true;
-                        subtractQuantity();
-                        
-                    }else if(choice.equals("3")) {
-        
-                        isValid = true;
-                        selectTask();
-                        System.out.println();
-        
-                    }else { 
-            
-                        isValid = false;
-                        System.out.println();
-                        System.out.println("\t\t\t\t\t\t\t\t          AEerror305: INVALID INPUT, TRY AGAIN!\n");
-            
-                    }
-            
-                    }while(isValid == false);
-        
             } catch (Exception e) {
                 
                 System.out.println();
@@ -280,7 +294,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
     }
 
     @Override
-    public void viewOverAllItems() {
+    public void viewOverAllItems() { //function for viewing the entire table
 
         System.out.println();
         
@@ -288,25 +302,25 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
         conn = aeDataBase.getConnection();
 
 		try {
-            PreparedStatement selectQuery = conn.prepareStatement("SELECT * FROM products"); //selecting from the table
+            PreparedStatement selectQuery = conn.prepareStatement("SELECT * FROM products"); //selecting from the entire table
 
 		    ResultSet fetchProducts = selectQuery.executeQuery(); //fetching the products
             System.out.println();
 
             System.out.println("\t\t\t\t\t\t\t\t\t         VIEW PRODUCTS TABLE");
-            System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
-            System.out.printf("\t\t\t\t\t   %20s%15s%15s%15s%15s%15s%15s", " ID" ,"      PRODUCT NAME" , "   QUANTITY", " DATE ADDED", "EXP DATE", "CATEGORY", "DAYS LEFT");
+            System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+            System.out.printf("\t\t\t\t\t   %8s%18s%18s%18s%17s%15s%15s", " ID" ,"      PRODUCT NAME" , "   QUANTITY", " DATE ADDED", "EXP DATE", "CATEGORY", "DAYS LEFT");
             System.out.println();
-            System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
+            System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
 
 
-            while(fetchProducts.next()) { //while it has a row to be fetch
+            while(fetchProducts.next()) { //while it has a row to be fetch, display the row from the data base
 
-                System.out.printf("\t\t\t\t\t   %20s%15s%15s%17s%17s%12s%15s" ,fetchProducts.getInt("product_id") ,fetchProducts.getString("product_name"), fetchProducts.getInt("product_quantity"), fetchProducts.getDate("date_added"), fetchProducts.getString("product_exp"), fetchProducts.getString("category"), fetchProducts.getInt("days_left"));System.out.println();
+                System.out.printf("\t\t\t\t\t   %8s%15s%18s%21s%18s%13s%13s" ,fetchProducts.getInt("product_id") ,fetchProducts.getString("product_name"), fetchProducts.getInt("product_quantity"), fetchProducts.getDate("date_added"), fetchProducts.getString("product_exp"), fetchProducts.getString("category"), fetchProducts.getInt("days_left"));
+                System.out.println();
               
-                System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
+                System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
             }
-
         } catch (SQLException e) {
 
             e.printStackTrace();
@@ -321,7 +335,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
             System.out.println("\t\t\t\t\t\t\t\t               > Exit[3]\n");
     
             System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
-            String choice = sc.next();
+            String choice = sc.nextLine();
 
             if(choice.equals("1")) { 
     
@@ -353,7 +367,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
     }
 
     @Override
-    public void viewItemsExpiry() {
+    public void viewItemsExpiry() { // function for viewing the items expiry 
 
         aeDataBase = new config();
         conn = aeDataBase.getConnection();
@@ -366,19 +380,19 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
             System.out.println();
 
             System.out.println("\t\t\t\t\t\t\t\t\t         VIEW PRODUCTS TABLE");
-            System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
-            System.out.printf("\t\t\t\t\t   %20s%15s%15s%15s%15s", " ID" ,"      PRODUCT NAME" , " DATE ADDED", "EXP DATE", "DAYS LEFT");
+            System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+            System.out.printf("\t\t\t\t\t   %8s%18s%18s%18s%17s%15s%15s", " ID" ,"      PRODUCT NAME" , "   QUANTITY", " DATE ADDED", "EXP DATE", "CATEGORY", "DAYS LEFT");
             System.out.println();
-            System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
+            System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
 
-            while(fetchProducts.next()) { //while it has a row to be fetch
 
-                System.out.printf("\t\t\t\t\t   %20s%15s%15s%17s%17s" ,fetchProducts.getInt("product_id") ,fetchProducts.getString("product_name"), fetchProducts.getDate("date_added"), fetchProducts.getString("product_exp"), fetchProducts.getInt("days_left"));
+            while(fetchProducts.next()) { //while it has a row to be fetch, display the row from the data base
+
+                System.out.printf("\t\t\t\t\t   %8s%15s%18s%21s%18s%13s%13s" ,fetchProducts.getInt("product_id") ,fetchProducts.getString("product_name"), fetchProducts.getInt("product_quantity"), fetchProducts.getDate("date_added"), fetchProducts.getString("product_exp"), fetchProducts.getString("category"), fetchProducts.getInt("days_left"));
                 System.out.println();
-            
-                System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
+              
+                System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
             }
-
             do{
 
                 System.out.println();
@@ -387,7 +401,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
                 System.out.println("\t\t\t\t\t\t\t\t             > Exit[2]\n");
     
                 System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
-                String adminChoice = sc.next();
+                String adminChoice = sc.nextLine();
         
                 if(adminChoice.equals("1")) { 
         
@@ -417,7 +431,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
     }
 
     @Override
-    public void exitSystem() {
+    public void exitSystem() { //function for exiting the system and ending the program
         
         
     }
@@ -428,17 +442,29 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
         try {
             conn = aeDataBase.getConnection(); //connecting to db
 
-			PreparedStatement insertQuery = conn.prepareStatement( //making a query
+            PreparedStatement checkNames = conn.prepareStatement("SELECT * FROM products WHERE product_name = ('"+ productsInv.getProductName() + "')");
+            ResultSet check = checkNames.executeQuery();
 
-				"INSERT INTO products (product_name, product_quantity, product_exp, date_added, category, days_left) VALUES ('" + productsInv.getProductName()  + "', '" + productsInv.getProductQuantity() + "', '"+ productsInv.getProductExpirationDate() + "', '"+ productsInv.getDateAdded() +"', '"+ productsInv.getProductCategory() + "', '" + productsInv.getDaysLeft() + "')"); //inserting products into db
+            if(check.isBeforeFirst()) {
+
+                isValid = false;
+                System.out.println("\t\t\t\t\t\t\t\t          AEerror305: CANNOT ADD SAME PRODUCT!\n");
+
+            }else { 
+    
+			PreparedStatement insertQuery = conn.prepareStatement( //making a query for inserting a product into the table
+
+            "INSERT INTO products (product_name, product_quantity, product_exp, date_added, category, days_left) VALUES ('" + productsInv.getProductName()  + "', '" + productsInv.getProductQuantity() + "', '"+ productsInv.getProductExpirationDate() + "', '"+ productsInv.getDateAdded() +"', '"+ productsInv.getProductCategory() + "', '" + productsInv.getDaysLeft() + "')"); //inserting products into db
 
             insertQuery.executeUpdate(); //update the date base
+
+            System.out.println("\t\t\t\t\t\t\t\t            ITEM INSERTED INTO THE TABLE.\n"); //updating the user that his/herp product is added into the db
+
+            }
 
 		} catch (Exception e) {
 
 		}
-
-        System.out.println("\t\t\t\t\t\t\t\t            ITEM INSERTED INTO THE TABLE.\n"); //updating the user that his/herp product is added into the db
         
         do{
 
@@ -447,7 +473,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
         System.out.println("\t\t\t\t\t\t\t\t             > Exit[2]\n");
 
         System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
-        String choice = sc.next();
+        String choice = sc.nextLine();
 
         if(choice.equals("1")) { 
 
@@ -478,7 +504,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
         System.out.println();
         
         System.out.print("\t\t\t\t\t\t\t\t        Enter the category: ");
-        String getCategory = sc.next().toUpperCase();
+        String getCategory = sc.nextLine().toUpperCase();
 
         try {
 
@@ -487,60 +513,68 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
             ResultSet fetchCategory = selectCategoryQuery.executeQuery(); //fetching the products
             System.out.println();
 
-            if(fetchCategory != null) { 
+            if(fetchCategory.isBeforeFirst()) { 
 
                 System.out.println("\t\t\t\t\t\t\t\t\t         VIEW PRODUCTS TABLE");
-                System.out.println("\t\t\t\t\t    ------------------------------------------------------------------------------------------------");
-                System.out.printf("\t\t\t\t\t\t   %20s%15s%15s%15s%15s%15s%15s"," ID", "          PRODUCT NAME" , "     QUANTITY", "   DATE ADDED   ", " EXPIRATION DATE", "CATEGORY", "DAYS LEFT");
+                System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+                System.out.printf("\t\t\t\t\t   %8s%18s%18s%18s%17s%15s%15s", " ID" ,"      PRODUCT NAME" , "   QUANTITY", " DATE ADDED", "EXP DATE", "CATEGORY", "DAYS LEFT");
                 System.out.println();
-                System.out.println("\t\t\t\t\t    ------------------------------------------------------------------------------------------------");
-
-                while(fetchCategory.next()) { //while it has a row to be fetch
-
-                    System.out.printf("\t\t\t\t\t\t   %20s%15s%15s%15s%15s%15s%15s" , fetchCategory.getInt("product_id"), fetchCategory.getString("product_name"), fetchCategory.getInt("product_quantity"), fetchCategory.getDate("date_added"), fetchCategory.getString("product_exp"), fetchCategory.getString("category"), fetchCategory.getInt("days_left"));
+                System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+    
+    
+                while(fetchCategory.next()) { //while it has a row to be fetch, display the row from the data base
+    
+                    System.out.printf("\t\t\t\t\t   %8s%15s%18s%21s%18s%13s%13s" ,fetchCategory.getInt("product_id") ,fetchCategory.getString("product_name"), fetchCategory.getInt("product_quantity"), fetchCategory.getDate("date_added"), fetchCategory.getString("product_exp"), fetchCategory.getString("category"), fetchCategory.getInt("days_left"));
                     System.out.println();
-                    System.out.println("\t\t\t\t\t    ------------------------------------------------------------------------------------------------");
-                };
+                  
+                    System.out.println("\t\t\t\t ---------------------------------------------------------------------------------------------------------------------------");
+                }
+
+                do{
+
+                    System.out.println();
+                    System.out.println("\t\t\t\t\t\t\t\t            What to do now?\n");
+                    System.out.println("\t\t\t\t\t\t\t\t             > Search Another Category[1]\n");
+                    System.out.println("\t\t\t\t\t\t\t\t             > View Table[2]\n");
+                    System.out.println("\t\t\t\t\t\t\t\t             > Exit[3]\n");
+            
+                    System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
+                    String adminChoice = sc.nextLine();
+            
+                    if(adminChoice.equals("1")) { 
+            
+                        isValid = true;
+                        selectCategory();
+            
+                    }else if(adminChoice.equals("2")) { 
+    
+                        isValid = true;
+                        viewOverAllItems();
+            
+                    }else if(adminChoice.equals("3")){
+    
+                        isValid = true;
+                        selectTask();
+                        System.out.println();
+    
+                    }else { 
+            
+                        isValid = false;
+                        System.out.println();
+                        System.out.println("\t\t\t\t\t\t\t\t          AEerror305: INVALID INPUT, TRY AGAIN!\n");
+            
+                    }
+            
+                    }while(isValid == false);
+    
+            }else {
+
+                isValid = false;
+                System.out.println("\t\t\t\t\t\t\t           AEerror305: INVALID INPUT, NONE EXISTING CATEGORY!\n");
 
             }
 
-            do{
-
-                System.out.println();
-                System.out.println("\t\t\t\t\t\t\t\t            What to do now?\n");
-                System.out.println("\t\t\t\t\t\t\t\t             > Search Another Category[1]\n");
-                System.out.println("\t\t\t\t\t\t\t\t             > View Table[2]\n");
-                System.out.println("\t\t\t\t\t\t\t\t             > Exit[3]\n");
-        
-                System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
-                String adminChoice = sc.next();
-        
-                if(adminChoice.equals("1")) { 
-        
-                    isValid = true;
-                    selectCategory();
-        
-                }else if(adminChoice.equals("2")) { 
-
-                    isValid = true;
-                    viewOverAllItems();
-        
-                }else if(adminChoice.equals("3")){
-
-                    isValid = true;
-                    selectTask();
-                    System.out.println();
-
-                }else { 
-        
-                    isValid = false;
-                    System.out.println();
-                    System.out.println("\t\t\t\t\t\t\t\t          AEerror305: INVALID INPUT, TRY AGAIN!\n");
-        
-                }
-        
-                }while(isValid == false);
-
+            
         } catch (SQLException e) {
 
             e.printStackTrace();
@@ -582,7 +616,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
                 System.out.println("\t\t\t\t\t\t\t\t                > Yes[1]\n");
                 System.out.println("\t\t\t\t\t\t\t\t                > No[2]\n");
                 System.out.print("\t\t\t\t\t\t\t\t       Enter based on corresponding number:  ");
-                String choice = sc.next();
+                String choice = sc.nextLine();
 
                 if(choice.equals("1")) {
 
@@ -706,7 +740,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
 
             while(fetchProducts.next()) { //while it has a row to be fetch
 
-                System.out.printf("\t\t\t\t\t   %20s%15s%15s%17s" ,fetchProducts.getInt("product_id") ,fetchProducts.getString("product_name"), fetchProducts.getString("product_exp"), fetchProducts.getInt("days_left"));
+                System.out.printf("\t\t\t\t\t   %20s%16s%17s%11s" ,fetchProducts.getInt("product_id") ,fetchProducts.getString("product_name"), fetchProducts.getString("product_exp"), fetchProducts.getInt("days_left"));
                 System.out.println();
             
                 System.out.println("\t\t\t\t      -----------------------------------------------------------------------------------------------------------");
@@ -720,7 +754,7 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
                 System.out.println("\t\t\t\t\t\t\t\t             > Back to home[2]\n");
         
                 System.out.print("\t\t\t\t\t\t\t\t        Enter based on corresponding number: ");
-                String adminChoice = sc.next();
+                String adminChoice = sc.nextLine();
         
                 if(adminChoice.equals("1")) { 
         
@@ -742,10 +776,8 @@ public class runAESystem extends absMethods { //goal to make kinda reallistic by
         
                 }while(isValid == false);
 
-
-
         } catch (Exception e) {
-            // TODO: handle exception
+            
         }
         
     }
